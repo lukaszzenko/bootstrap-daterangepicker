@@ -127,6 +127,21 @@
 
         setOptions: function(options, callback) {
 
+            // *** highlightDate extension ***
+            // Original daterangepicker highlights all dates between
+            // start and end. highlightDate extension adds additional
+            // filter - highlightDate(start, end, date) function.
+            // It is called _only_ for  dates between start and end,
+            // so it doesn't have to check that.
+            this.highlightDate = function() {
+                return true;
+            };
+
+            if (typeof options.highlightDate === 'function') {
+                this.highlightDate = options.highlightDate;
+            }
+            // *** highlightDate extension ***
+
             this.startDate = moment().startOf('day');
             this.endDate = moment().endOf('day');
             this.timeZone = moment().zone();
@@ -1082,7 +1097,11 @@
                             cname += ' end-date ';
                         }
                     } else if (calendar[row][col] >= this.startDate && calendar[row][col] <= this.endDate) {
-                        cname += ' in-range ';
+                        // *** highlightDate extension *** //
+                        if(this.highlightDate(this.startDate, this.endDate, calendar[row][col])) {
+                            cname += ' in-range';
+                        }
+                        // *** highlightDate extension *** //
                         if (calendar[row][col].isSame(this.startDate)) { cname += ' start-date '; }
                         if (calendar[row][col].isSame(this.endDate)) { cname += ' end-date '; }
                     }
